@@ -57,6 +57,8 @@ services:
     networks:
       proxy_net:
       ext_net:
+    depends_on: 
+      - web
     deploy:
       replicas: 3
       update_config:

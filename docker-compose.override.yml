@@ -42,6 +42,8 @@ services:
       - 80:80
     networks:
       proxy_net:
+    depends_on: 
+      - web
     healthcheck:
       test: curl -f http://localhost/ || exit 0
       interval: 5s
