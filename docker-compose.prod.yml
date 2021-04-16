@@ -1,5 +1,29 @@
 version: "3.7"
 services:
+  proxy:
+    image: asbiamrullah19/proxy-custom
+    depends_on:
+      - web
+    ports:
+      - 80:80
+    networks:
+      proxy_net:
+      ext_net:
+    depends_on: 
+      - web
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: any
+    healthcheck:
+      test: curl -f http://localhost/ || exit 0
+      interval: 5s
+      timeout: 10s
+      retries: 3
+
   web:
     working_dir: /var/www/html
     volumes:
@@ -47,31 +71,6 @@ services:
       test: "/etc/init.d/mysql status"
       interval: 1s
       retries: 120
-
-  proxy:
-    image: asbiamrullah19/proxy-custom
-    depends_on:
-      - web
-    ports:
-      - 80:80
-    networks:
-      proxy_net:
-      ext_net:
-    depends_on: 
-      - web
-    deploy:
-      replicas: 3
-      update_config:
-        parallelism: 2
-        delay: 10s
-      restart_policy:
-        condition: any
-    healthcheck:
-      test: curl -f http://localhost/ || exit 0
-      interval: 5s
-      timeout: 10s
-      retries: 3
-
   pma:
     image: phpmyadmin:latest
     depends_on:
@@ -88,7 +87,6 @@ services:
         delay: 10s
       restart_policy:
         condition: any
-
     healthcheck:
       test: curl -f http://localhost:80/ || exit 1
       interval: 5s
